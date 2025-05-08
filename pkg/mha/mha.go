@@ -7,9 +7,9 @@ import (
 )
 
 type Head struct {
-	WQuery *mat.Dense `json:"wQuery"`
-	WKey   *mat.Dense `json:"wKey"`
-	WValue *mat.Dense `json:"wValue"`
+	WQuery *mat.Dense
+	WKey   *mat.Dense
+	WValue *mat.Dense
 	input,
 	query,
 	key,
@@ -101,8 +101,8 @@ func NewHead(icol, wcol int) *Head {
 }
 
 type MHA struct {
-	Heads   []*Head    `json:"heads"`
-	WOutput *mat.Dense `json:"wOutput"`
+	Heads   []*Head
+	WOutput *mat.Dense
 	concat  *mat.Dense
 }
 

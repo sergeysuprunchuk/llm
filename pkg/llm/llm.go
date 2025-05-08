@@ -9,8 +9,8 @@ import (
 )
 
 type Layer struct {
-	MHA *mha.MHA `json:"mha"`
-	MLP *mlp.MLP `json:"mlp"`
+	MHA *mha.MHA
+	MLP *mlp.MLP
 	mhaMask,
 	mlpMask *mat.Dense
 }
@@ -77,9 +77,9 @@ func NewLayer(h, irow, icol int, wcol int) *Layer {
 }
 
 type LLM struct {
-	Embeds  *mat.Dense `json:"embeds"`
-	Pos     *mat.Dense `json:"pos"`
-	Layers  []*Layer   `json:"layers"`
+	Embeds  *mat.Dense
+	Pos     *mat.Dense
+	Layers  []*Layer
 	last    *mat.Dense
 	indices []int
 }

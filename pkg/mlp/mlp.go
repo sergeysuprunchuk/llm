@@ -6,8 +6,8 @@ import (
 )
 
 type Layer struct {
-	Weights *mat.Dense `json:"weights"`
-	Bias    *mat.Dense `json:"bias"`
+	Weights *mat.Dense
+	Bias    *mat.Dense
 
 	input, output *mat.Dense
 }
@@ -41,7 +41,7 @@ func NewLayer(irow, icol, wcol int) *Layer {
 }
 
 type MLP struct {
-	Layers []*Layer `json:"layers"`
+	Layers []*Layer
 }
 
 func (mlp *MLP) Forward(input *mat.Dense) *mat.Dense {
