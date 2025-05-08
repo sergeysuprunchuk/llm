@@ -161,8 +161,8 @@ func New(ctxsize, embrown, embcoln, l, h int) *LLM {
 	}
 
 	return &LLM{
-		Embeds: mat.NewDense(embrown, embcoln, nil),
-		Pos:    mat.NewDense(ctxsize, embcoln, nil),
+		Embeds: lib.Xavier(embrown, embcoln),
+		Pos:    lib.Xavier(ctxsize, embcoln),
 		Layers: layers,
 	}
 }

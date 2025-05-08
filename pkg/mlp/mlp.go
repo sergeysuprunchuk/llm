@@ -35,7 +35,7 @@ func (layer *Layer) ParamN() int {
 
 func NewLayer(irow, icol, wcol int) *Layer {
 	return &Layer{
-		Weights: mat.NewDense(icol, wcol, nil),
+		Weights: lib.He(icol, wcol),
 		Bias:    mat.NewDense(irow, wcol, nil),
 	}
 }

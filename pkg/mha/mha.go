@@ -94,9 +94,9 @@ func (head *Head) ParamN() int {
 
 func NewHead(icol, wcol int) *Head {
 	return &Head{
-		WQuery: mat.NewDense(icol, wcol, nil),
-		WKey:   mat.NewDense(icol, wcol, nil),
-		WValue: mat.NewDense(icol, wcol, nil),
+		WQuery: lib.Xavier(icol, wcol),
+		WKey:   lib.Xavier(icol, wcol),
+		WValue: lib.Xavier(icol, wcol),
 	}
 }
 
@@ -164,6 +164,6 @@ func New(h, icol int, wcol int) *MHA {
 
 	return &MHA{
 		Heads:   heads,
-		WOutput: mat.NewDense(h*wcol, icol, nil),
+		WOutput: lib.Xavier(h*wcol, icol),
 	}
 }

@@ -3,6 +3,7 @@ package lib
 import (
 	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/mat"
+	"gonum.org/v1/gonum/stat/distuv"
 	"math"
 	"math/rand"
 )
@@ -158,4 +159,31 @@ func DropoutMask(r, c int, p float64) *mat.Dense {
 func ParamN(src *mat.Dense) int {
 	rown, coln := src.Dims()
 	return rown * coln
+}
+
+func Xavier(r, c int) *mat.Dense {
+	data := make([]float64, r*c)
+
+	limit := math.Sqrt(6) /
+		math.Sqrt(float64(r)+float64(c))
+
+	dist := distuv.Uniform{Min: -limit, Max: limit}
+	for index := range data {
+		data[index] = dist.Rand()
+	}
+
+	return mat.NewDense(r, c, data)
+}
+
+func He(r, c int) *mat.Dense {
+	data := make([]float64, r*c)
+
+	dist := distuv.Normal{
+		Sigma: math.Sqrt(2. / float64(r)),
+	}
+	for index := range data {
+		data[index] = dist.Rand()
+	}
+
+	return mat.NewDense(r, c, data)
 }
