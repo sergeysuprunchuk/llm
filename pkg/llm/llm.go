@@ -80,6 +80,7 @@ type LLM struct {
 	Embeds  *mat.Dense
 	Pos     *mat.Dense
 	Layers  []*Layer
+	CtxSize int
 	last    *mat.Dense
 	indices []int
 }
@@ -161,8 +162,9 @@ func New(ctxsize, embrown, embcoln, l, h int) *LLM {
 	}
 
 	return &LLM{
-		Embeds: lib.Xavier(embrown, embcoln),
-		Pos:    lib.Xavier(ctxsize, embcoln),
-		Layers: layers,
+		Embeds:  lib.Xavier(embrown, embcoln),
+		Pos:     lib.Xavier(ctxsize, embcoln),
+		Layers:  layers,
+		CtxSize: ctxsize,
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 	"llm/pkg/lib"
 	"math"
+	"sync"
 )
 
 type Head struct {
@@ -107,10 +108,23 @@ type MHA struct {
 }
 
 func (mha *MHA) Forward(input *mat.Dense) *mat.Dense {
-	var concat mat.Dense
+	var wg sync.WaitGroup
 
-	for _, head := range mha.Heads {
-		lib.Concat(&concat, head.Forward(input))
+	results := make([]*mat.Dense, len(mha.Heads))
+	for index := range mha.Heads {
+		wg.Add(1)
+
+		go func(index int) {
+			results[index] = mha.Heads[index].Forward(input)
+			wg.Done()
+		}(index)
+	}
+
+	wg.Wait()
+
+	var concat mat.Dense
+	for _, res := range results {
+		lib.Concat(&concat, res)
 	}
 
 	var output mat.Dense
