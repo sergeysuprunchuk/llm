@@ -108,18 +108,16 @@ type MHA struct {
 }
 
 func (mha *MHA) Forward(input *mat.Dense) *mat.Dense {
-	var wg sync.WaitGroup
-
 	results := make([]*mat.Dense, len(mha.Heads))
-	for index := range mha.Heads {
-		wg.Add(1)
 
+	var wg sync.WaitGroup
+	wg.Add(len(mha.Heads))
+	for index := range mha.Heads {
 		go func(index int) {
 			results[index] = mha.Heads[index].Forward(input)
 			wg.Done()
 		}(index)
 	}
-
 	wg.Wait()
 
 	var concat mat.Dense
@@ -139,23 +137,36 @@ func (mha *MHA) Backward(output *mat.Dense, lr float64) *mat.Dense {
 	var concat mat.Dense
 	concat.Mul(output, mha.WOutput.T())
 
+	grads := lib.Split(&concat, len(mha.Heads))
 	var input mat.Dense
-	for index, grad := range lib.Split(&concat, len(mha.Heads)) {
-		add := mha.Heads[index].Backward(grad, lr)
 
-		if input.IsEmpty() {
-			input.CloneFrom(add)
-			continue
-		}
+	var mut sync.Mutex
 
-		input.Add(&input, add)
+	var wg sync.WaitGroup
+	wg.Add(len(grads))
+	for index := range grads {
+		go func(index int) {
+			defer wg.Done()
+
+			res := mha.Heads[index].Backward(grads[index], lr)
+
+			mut.Lock()
+			defer mut.Unlock()
+
+			if input.IsEmpty() {
+				input.CloneFrom(res)
+				return
+			}
+
+			input.Add(&input, res)
+		}(index)
 	}
 
 	var woutput mat.Dense
 	woutput.Mul(mha.concat.T(), output)
-
 	lib.Step(mha.WOutput, &woutput, lr)
 
+	wg.Wait()
 	return &input
 }
 
