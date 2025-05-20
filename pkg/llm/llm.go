@@ -123,9 +123,6 @@ func (llm *LLM) Backward(output *mat.Dense, lr float64) {
 			Backward(&layer, alphaMHA, alphaMLP, lr)
 	}
 
-	var pos mat.Dense
-	pos.CloneFrom(&layer)
-
 	var embeds mat.Dense
 	embeds.Mul(llm.last.T(), output)
 	embedsT := mat.DenseCopyOf(embeds.T())
@@ -139,7 +136,7 @@ func (llm *LLM) Backward(output *mat.Dense, lr float64) {
 		}
 	}
 
-	lib.Step(llm.Pos, &pos, lr)
+	lib.Step(llm.Pos, &layer, lr)
 	lib.Step(llm.Embeds, embedsT, lr)
 }
 
