@@ -1,11 +1,13 @@
 package llm
 
 import (
+	"encoding/gob"
 	"gonum.org/v1/gonum/mat"
 	"llm/pkg/lib"
 	"llm/pkg/mha"
 	"llm/pkg/mlp"
 	"math"
+	"os"
 )
 
 type Layer struct {
@@ -163,5 +165,39 @@ func New(ctxsize, embrown, embcoln, l, h int) *LLM {
 		Pos:     lib.Xavier(ctxsize, embcoln),
 		Layers:  layers,
 		CtxSize: ctxsize,
+	}
+}
+
+func Load(src string) *LLM {
+	var llm LLM
+
+	file, err := os.Open(src)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	err = gob.
+		NewDecoder(file).
+		Decode(&llm)
+	if err != nil {
+		panic(err)
+	}
+
+	return &llm
+}
+
+func (llm *LLM) Save(trg string) {
+	file, err := os.Create(trg)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	err = gob.
+		NewEncoder(file).
+		Encode(llm)
+	if err != nil {
+		panic(err)
 	}
 }

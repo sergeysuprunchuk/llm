@@ -408,3 +408,57 @@ func Test_ParamN(t *testing.T) {
 		}
 	}
 }
+
+func Test_CrossEntropy(t *testing.T) {
+	tests := []struct {
+		pred, ans *mat.Dense
+		out       float64
+	}{
+		{
+			pred: mat.NewDense(2, 3, []float64{
+				.7, .2, .1,
+				.1, .8, .1,
+			}),
+			ans: mat.NewDense(2, 3, []float64{
+				1, 0, 0,
+				0, 1, 0,
+			}),
+			out: .2899,
+		},
+	}
+
+	for i, test := range tests {
+		out := CrossEntropy(test.pred, test.ans)
+
+		if math.Abs(test.out-out) > 1e-4 {
+			t.Errorf("%d: expected %v, got %v", i, test.out, out)
+		}
+	}
+}
+
+func Test_HotEnc(t *testing.T) {
+	tests := []struct {
+		inds []int
+		l    int
+		out  *mat.Dense
+	}{
+		{
+			inds: []int{0, 2, 4, 8},
+			l:    10,
+			out: mat.NewDense(4, 10, []float64{
+				1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+			}),
+		},
+	}
+
+	for i, test := range tests {
+		out := HotEnc(test.inds, test.l)
+
+		if !mat.Equal(test.out, out) {
+			t.Errorf("%d: expected %v, got %v", i, test.out, out)
+		}
+	}
+}

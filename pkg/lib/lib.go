@@ -187,3 +187,30 @@ func He(r, c int) *mat.Dense {
 
 	return mat.NewDense(r, c, data)
 }
+
+func CrossEntropy(pred, ans *mat.Dense) float64 {
+	var sum float64
+
+	for row := range Rown(ans) {
+		for col := range Coln(ans) {
+			a := ans.At(row, col)
+			if a == 0 {
+				continue
+			}
+
+			sum += a * math.Log(max(1e-8, min(pred.At(row, col), 1.)))
+		}
+	}
+
+	return -(sum / float64(Rown(ans)))
+}
+
+func HotEnc(inds []int, l int) *mat.Dense {
+	m := mat.NewDense(len(inds), l, nil)
+
+	for row, ind := range inds {
+		m.Set(row, ind, 1)
+	}
+
+	return m
+}

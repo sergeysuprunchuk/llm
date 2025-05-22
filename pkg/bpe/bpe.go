@@ -82,6 +82,8 @@ GetTok перед использованием необходимо вызват
 */
 func (bpe *BPE) GetTok(ind int) string { return bpe.inv[ind] }
 
+func (bpe *BPE) Len() int { return len(bpe.val) }
+
 type data struct {
 	Val map[string]int
 	EOW,
